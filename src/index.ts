@@ -18,16 +18,12 @@ interface Config {
 }
 
 export default class Plugin
-{
-  static addStyle(html: string, style: string) {
-    return html.replace('</head>', `<style>${style}</style></head>`);
-  }
-
-  static removeLinkTag(html: string, cssFileName: string) {
+{ 
+  static replaceLinkWithStyle(html: string, style: string, cssFileName: string) {
     return html.replace(
       new RegExp(`<link[^>]+href=['"]${cssFileName}['"][^>]+(>|\/>|><\/link>)`),
-      '',
-    );
+      `<style>${style}</style>`
+      );
   }
 
   private config: Config;
@@ -71,8 +67,7 @@ export default class Plugin
       let html = this.html[htmlFileName];
 
       Object.keys(this.css).forEach((key) => {
-        html = Plugin.addStyle(html, this.css[key]);
-        html = Plugin.removeLinkTag(html, publicPath + key);
+        html = Plugin.replaceLinkWithStyle(html, this.css[key], publicPath + key);
       });
 
       assets[htmlFileName] = {
